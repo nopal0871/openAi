@@ -7,6 +7,7 @@ apiKey: setting.OPENAI_APIKEY,
 const openai = new OpenAIApi(configuration);
 const bot = new Telegraf(BOT_TOKEN);
 const client = bot.telegram;
+chatbot = {};
 
 function reply(chatid, message, msgid, opts) {
     return client.sendMessage(chatid, message, { reply_to_message_id: msgid, ...opts });
@@ -29,6 +30,9 @@ bot.on('message', async (ctx) => {
     let userIdLink = "tg://user?id=" + userId;
     let args = body.split(" ").slice(1);
     let command = body.split(" ")[0].toLowerCase();
+    if (!global.chatbot[userId]) {
+    chatbot[userId] = ["Ai: Aku Adalah Chatbot Yang Di Ciptakan oleh Caliph Dev!"];
+    }
 
     switch (command) {
     case "/start":
@@ -67,12 +71,15 @@ https://t.me/${bot.botInfo.username.toLowerCase()}`;
         default:
         if (!body) return 
         client.sendChatAction(chatId, "typing");
+        chatbot[userId].push(`Human: ${body}`)
+        chatbot[userId].push(`Ai:`)
 try {
 const response = await openai.createCompletion({
           model: "text-davinci-003",
-          prompt: body,
+          prompt: chatbot[userId].join("\n"),
           temperature: 0,
           max_tokens: MAX_TOKEN,
+          stop: ["Ai:", "Human:"],
           top_p: 1,
           frequency_penalty: 0.2,
           presence_penalty: 0,
@@ -80,7 +87,7 @@ const response = await openai.createCompletion({
         if (setting.debug) console.log(response.data);
 reply(chatId, response.data.choices[0].text.trim(), messageId);
 } catch (e) {
-reply(chatId, "Maaf, saya tidak mengerti maksud anda!", messageId);
+reply(chatId, "Server Error, AI Not Responding...", messageId);
 } 
         break;
     }
