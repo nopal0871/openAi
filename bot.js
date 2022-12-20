@@ -31,7 +31,7 @@ bot.on('message', async (ctx) => {
     let args = body.split(" ").slice(1);
     let command = body.split(" ")[0].toLowerCase();
     if (!global.chatbot[userId]) {
-    chatbot[userId] = ["Ai: Aku Adalah Chatbot Yang Di Ciptakan oleh Caliph Dev!"];
+    chatbot[userId] = ["Ai: Aku Adalah Oxxybot Yang Di Ciptakan oleh Oxxy Dev!"];
     }
 
     switch (command) {
